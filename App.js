@@ -1,112 +1,88 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, {Fragment, useState} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  Button
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+class Habit {
+  constructor(title, status="", description="") {
+    this.title = title
+    this.description = description
+    this.status = status // done, '', missed
+  }
+}
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+const style = StyleSheet.create({
+  frame1: {
+    borderWidth: 2,
+    borderColor: 'blue',
+    margin: 15,
+    padding: 10,
   },
-  sectionTitle: {
+  h1: {
     fontSize: 24,
-    fontWeight: '600',
+    textAlign: 'center'
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  h3: {
+    fontSize: 20
   },
-  highlight: {
-    fontWeight: '700',
+  p: {
+    fontSize: 14,
   },
-});
+  checked: {
+    backgroundColor: "red"
+  },
+  habitView: {
+    borderWidth: 2,
+    borderColor: 'magenta',
+    // margin: 15,
+    // padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  habbitButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 78
+  },
+  btn: {
+    width: 35,
+    height: 35
+  },
+  right: {
+    textAlign: "right"
+  },
+})
+
+const HabbitButtons = ({habit, setHabit}) => {
+  return <View style={style.habbitButtons}>
+    <View style={style.btn}><Button title="V" /></View>
+    <View style={style.btn}><Button title="X" /></View>
+  </View>
+}
+
+const HabitView = ({habit: initHabit}) => {
+  const [habit, setHabit] = useState(initHabit)
+  return <View style={style.habitView}>
+    <HabbitButtons habit={habit} setHabit={setHabit}/>
+    <View>
+      <Text style={[style.h3, style.right]}>{habit.title}</Text>
+      <Text style={[style.p, style.right]}>{habit.description}</Text>
+    </View>
+  </View>
+}
+
+const App = () => {
+  const h1 = new Habit("my habit","", "A description")
+  return (
+    <View style={style.frame1}>
+      <HabitView habit={h1}></HabitView>
+    </View>
+  )
+};
 
 export default App;
