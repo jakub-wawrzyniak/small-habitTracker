@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from 'react';
 import {
   ScrollView,
+  FlatList,
   Pressable,
   StyleSheet,
   Text,
@@ -8,11 +9,14 @@ import {
   Button
 } from 'react-native';
 
+var idCounter = 0;
 class Habit {
   constructor(title, status="", description="") {
     this.title = title
     this.description = description
     this.status = status // done, '', missed
+    this.id = idCounter;
+    idCounter++;
   }
 
   copy() {
@@ -26,7 +30,6 @@ class Habit {
 
 const style = StyleSheet.create({
   frame1: {
-    // borderWidth: 2,
     borderColor: 'blue',
     margin: 15,
   },
@@ -41,9 +44,9 @@ const style = StyleSheet.create({
     fontSize: 14,
   },
   habitView: {
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    marginVertical: 10,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    marginVertical: 5,
     padding: 10,
     borderColor: '#444',
     flexDirection: "row",
@@ -118,19 +121,24 @@ const AddHabitButton = ({onPress}) => {
     borderColor:"#000",
     bottom: 2
   }
-  return <Pressable style={style}>
+  return <Pressable style={style} onPress={onPress}>
     <Text style={textStyle}>+</Text>
   </Pressable>
 }
 
 const App = () => {
-  const h1 = new Habit("my habit","done", "A description")
+  const [habits, setHabits] = useState([
+    new Habit("my habit","done", "A description")])
+  const handlePress = () => {
+    const newHabits = [...habits]
+    newHabits.push(new Habit("New habit","", "Your description"))
+    setHabits(newHabits)
+  }
   return (
   <Fragment>
-    <View style={style.frame1}>
-      <HabitView habit={h1}></HabitView>
-    </View>
-    <AddHabitButton/>
+    <FlatList data={habits} style={style.frame1}
+    renderItem={({item: habit}) => <HabitView key={habit.id} habit={habit}/>}/>
+    <AddHabitButton onPress={handlePress}/>
   </Fragment>
   )
 };
