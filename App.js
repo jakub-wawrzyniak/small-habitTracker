@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from 'react';
 import {
   ScrollView,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -40,10 +41,10 @@ const style = StyleSheet.create({
     fontSize: 14,
   },
   habitView: {
-    borderWidth: 2,
-    borderRadius: 10,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
     marginVertical: 10,
-    padding: 8,
+    padding: 10,
     borderColor: '#444',
     flexDirection: "row",
     justifyContent: "space-between",
@@ -96,12 +97,41 @@ const HabitView = (props) => {
   </View>
 }
 
+const AddHabitButton = ({onPress}) => {
+  const style = {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    width: 50,
+    height: 50,
+    backgroundColor: "#1bd",
+    borderRadius: 50,
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center"
+  }
+  const textStyle = {
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "300",
+    borderColor:"#000",
+    bottom: 2
+  }
+  return <Pressable style={style}>
+    <Text style={textStyle}>+</Text>
+  </Pressable>
+}
+
 const App = () => {
   const h1 = new Habit("my habit","done", "A description")
   return (
+  <Fragment>
     <View style={style.frame1}>
       <HabitView habit={h1}></HabitView>
     </View>
+    <AddHabitButton/>
+  </Fragment>
   )
 };
 
