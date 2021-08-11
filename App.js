@@ -13,6 +13,14 @@ class Habit {
     this.description = description
     this.status = status // done, '', missed
   }
+
+  copy() {
+    const copy = new Habit()
+    copy.title = this.title
+    copy.description = this.description
+    copy.status = this.status
+    return copy
+  }
 }
 
 const style = StyleSheet.create({
@@ -60,9 +68,16 @@ const HabbitButtons = ({habit, setHabit}) => {
   for (let type of [["V", "done"], ["X", "missed"]]) {
     let color = "#575757";
     if (habit.status.includes(type[1])) color = "#1bd"
+    const handlePress = () => {
+      const newHabit = habit.copy()
+      newHabit.status = habit.status.includes(type[1])
+        ? ""
+        : type[1]
+      setHabit(newHabit)
+    }
     jsx.push(
       <View style={style.btn} key={type[0]}>
-        <Button title={type[0]} color={color}/>
+        <Button title={type[0]} color={color} onPress={handlePress}/>
       </View>
     )
   }
