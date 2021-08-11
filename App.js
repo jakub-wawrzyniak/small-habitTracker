@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Button
+  Button,
+  TextInput
 } from 'react-native';
 
 var idCounter = 0;
@@ -126,9 +127,7 @@ const AddHabitButton = ({onPress}) => {
   </Pressable>
 }
 
-const App = () => {
-  const [habits, setHabits] = useState([
-    new Habit("my habit","done", "A description")])
+const mainView = ({habits, editHabit}) => {
   const handlePress = () => {
     const newHabits = [...habits]
     newHabits.push(new Habit("New habit","", "Your description"))
@@ -141,6 +140,51 @@ const App = () => {
     <AddHabitButton onPress={handlePress}/>
   </Fragment>
   )
+}
+
+const EditField = ({
+  setText,
+  label,
+  placeholder,
+  defaultValue
+}) => {
+  return <View style={{
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 5,
+    paddingVertical: 5,
+    marginVertical: 5,
+    width: "100%"}}>
+    <Text style={{
+      marginRight: 10,
+      fontSize: 18}}>{label}:</Text>
+    <View style={{borderBottomWidth: 1, flex: 1}}>
+      <TextInput 
+        style={{fontSize: 16, width: '100%'}}
+        onChangeText={(newText) => setText(newText)} 
+        placeholder="This is a placeholder"
+        defaultValue={defaultValue}
+        />
+    </View>
+  </View>
+}
+
+const EditView = () => {
+  const [t, setT] = useState("hi!")
+  return <View style={style.frame1}>
+    <EditField setText={setT} label={'trial'}/>
+    <EditField setText={setT} label={'trial'}/>
+    <EditField setText={setT} label={'trial'}/>
+    <EditField setText={setT} label={'trial'}/>
+  </View>
+}
+
+const App = () => {
+  const [habits, setHabits] = useState([
+    new Habit("my habit","done", "A description")])
+  const [toEdit, setToEdit] = useState(-1)
+  
+  return <EditView/>
 };
 
 export default App;
