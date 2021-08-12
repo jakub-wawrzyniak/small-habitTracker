@@ -10,6 +10,13 @@ import {
   TextInput
 } from 'react-native';
 
+
+const COLORS = {
+  theme: "#1bd",
+  dark: "#222",
+  light: "#777",
+}
+
 var idCounter = 0;
 class Habit {
   constructor(title, status="", description="") {
@@ -40,6 +47,11 @@ const style = StyleSheet.create({
   },
   h3: {
     fontSize: 20
+  },
+  h4: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "black"
   },
   p: {
     fontSize: 14,
@@ -151,31 +163,62 @@ const EditField = ({
   return <View style={{
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    marginVertical: 5,
+    // paddingHorizontal: 5,
+    borderBottomWidth: 1,
+    borderColor: COLORS.dark,
+    // paddingVertical: 0,
+    marginVertical: 10,
     width: "100%"}}>
     <Text style={{
       marginRight: 10,
-      fontSize: 18}}>{label}:</Text>
-    <View style={{borderBottomWidth: 1, flex: 1}}>
+      fontSize: 17}}>{label}:</Text>
+    <View style={{flex: 1}}>
       <TextInput 
         style={{fontSize: 16, width: '100%'}}
         onChangeText={(newText) => setText(newText)} 
-        placeholder="This is a placeholder"
+        placeholder="Type here..."
         defaultValue={defaultValue}
         />
     </View>
   </View>
 }
 
-const EditView = () => {
-  const [t, setT] = useState("hi!")
+const EditSaveButtons = () => {
+  const st = StyleSheet.create({
+    innerView: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginVertical: 25,
+    },
+    btn: {
+      flex: 1,
+      maxWidth: "48%",
+      paddingHorizontal: 40,
+      paddingVertical: 12,
+      borderRadius: 10,
+      backgroundColor: COLORS.light
+    },
+    highlight: {
+      backgroundColor: COLORS.theme
+    }
+  })
+
+  return <View><View style={st.innerView}>
+    <Pressable style={st.btn}>
+      <Text style={[style.h4]}>Cancel</Text></Pressable>
+    <Pressable style={[st.btn, st.highlight]}><Text style={style.h4}>Save</Text></Pressable>
+  </View></View>
+}
+
+const EditView = ({habit, setHabit, closeView}) => {
+  const [title, setTitle] = useState(habit.title)
+  const [desc, setDesc] = useState(habit.description)
   return <View style={style.frame1}>
-    <EditField setText={setT} label={'trial'}/>
-    <EditField setText={setT} label={'trial'}/>
-    <EditField setText={setT} label={'trial'}/>
-    <EditField setText={setT} label={'trial'}/>
+    <EditField setText={setTitle} label={'Title'}
+      defaultValue={title}/>
+    <EditField setText={setDesc} label={'Description'}
+      defaultValue={desc}/>
+    <EditSaveButtons/>
   </View>
 }
 
@@ -184,7 +227,7 @@ const App = () => {
     new Habit("my habit","done", "A description")])
   const [toEdit, setToEdit] = useState(-1)
   
-  return <EditView/>
+  return <EditView habit={habits[0]}/>
 };
 
 export default App;
