@@ -28,10 +28,12 @@ class Habit {
   }
 
   copy() {
+    // Can this be cleaned? (i know it can)
     const copy = new Habit()
     copy.title = this.title
     copy.description = this.description
     copy.status = this.status
+    copy.id = this.id
     return copy
   }
 }
@@ -106,10 +108,10 @@ const HabitView = (props) => {
   const [habit, setHabit] = useState(props.habit)
   return <View style={style.habitView}>
     <HabbitButtons habit={habit} setHabit={setHabit}/>
-    <View>
+    <Pressable onPress={() => props.edit(habit.id)}>
       <Text style={[style.h3, style.right]}>{habit.title}</Text>
       <Text style={[style.p, style.right]}>{habit.description}</Text>
-    </View>
+    </Pressable>
   </View>
 }
 
@@ -139,17 +141,13 @@ const AddHabitButton = ({onPress}) => {
   </Pressable>
 }
 
-const mainView = ({habits, editHabit}) => {
-  const handlePress = () => {
-    const newHabits = [...habits]
-    newHabits.push(new Habit("New habit","", "Your description"))
-    setHabits(newHabits)
-  }
+const MainView = ({habits, editHabit, addHabit}) => {
   return (
   <Fragment>
     <FlatList data={habits} style={style.frame1}
-    renderItem={({item: habit}) => <HabitView key={habit.id} habit={habit}/>}/>
-    <AddHabitButton onPress={handlePress}/>
+    renderItem={({item: habit}) =>
+      <HabitView key={habit.id} habit={habit} edit={editHabit}/>}/>
+    <AddHabitButton onPress={addHabit}/>
   </Fragment>
   )
 }
@@ -183,7 +181,7 @@ const EditField = ({
   </View>
 }
 
-const EditSaveButtons = () => {
+const EditSaveButtons = ({cancel, save}) => {
   const st = StyleSheet.create({
     innerView: {
       flexDirection: "row",
@@ -204,30 +202,62 @@ const EditSaveButtons = () => {
   })
 
   return <View><View style={st.innerView}>
-    <Pressable style={st.btn}>
+    <Pressable style={st.btn} onPress={cancel}>
       <Text style={[style.h4]}>Cancel</Text></Pressable>
-    <Pressable style={[st.btn, st.highlight]}><Text style={style.h4}>Save</Text></Pressable>
+    <Pressable style={[st.btn, st.highlight]} onPress={save}>
+      <Text style={style.h4}>Save</Text></Pressable>
   </View></View>
 }
 
 const EditView = ({habit, setHabit, closeView}) => {
   const [title, setTitle] = useState(habit.title)
   const [desc, setDesc] = useState(habit.description)
+
+  const handleSave = () => {
+    const newHabit = habit.copy()
+    newHabit.title = title
+    newHabit.description = desc
+    setHabit(newHabit)
+    closeView()
+  }
+
   return <View style={style.frame1}>
     <EditField setText={setTitle} label={'Title'}
       defaultValue={title}/>
     <EditField setText={setDesc} label={'Description'}
       defaultValue={desc}/>
-    <EditSaveButtons/>
+    <EditSaveButtons cancel={closeView} save={handleSave}/>
   </View>
 }
 
 const App = () => {
   const [habits, setHabits] = useState([
     new Habit("my habit","done", "A description")])
-  const [toEdit, setToEdit] = useState(-1)
+  const [toEditId, setToEditId] = useState(null)
   
-  return <EditView habit={habits[0]}/>
+  const setHabit = (newHabit) => {
+    const newHabits = habits.filter(h => h.id != newHabit.id)
+    newHabits.push(newHabit)
+    setHabits(newHabits)
+  }
+  const addHabit = () => {
+    const newHabits = [...habits]
+    newHabits.push(new Habit("New habit", "", "Some description"))
+    setHabits(newHabits)
+  }
+
+  if (toEditId == null) return <MainView 
+      habits={habits} addHabit={addHabit}
+      editHabit={(habitId) => setToEditId(habitId)}
+    />
+
+  const editHabit = habits.find(h => h.id === toEditId)
+  console.assert(!editHabit, "There no habit with id", toEditId, 'was found!')
+  return <EditView
+    habit={editHabit}
+    setHabit={setHabit}
+    closeView={() => setToEditId(null)}
+  />
 };
 
 export default App;
