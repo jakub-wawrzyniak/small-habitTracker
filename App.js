@@ -4,6 +4,12 @@ import EditView from './src/editView'
 import MainView from './src/mainView'
 
 const App = () => {
+  // return <DateTimePicker
+  //   mode="date"
+  //   display="calendar"
+  //   value={new Date()}
+  // />
+
   const [habits, setHabits] = useState([])
   const [toEditId, setToEditId] = useState(null)
   

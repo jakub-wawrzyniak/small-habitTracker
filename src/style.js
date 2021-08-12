@@ -32,7 +32,7 @@ const style = StyleSheet.create({
     },
     
     appFrame: {
-      margin: 15,
+      marginHorizontal: 15,
     },
     habitView: {
       borderTopWidth: 1,

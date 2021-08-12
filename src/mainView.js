@@ -1,7 +1,50 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { style, colors } from './style';
 import { View, Button, Pressable, FlatList,
-    Text, StyleSheet } from 'react-native'
+    Text, StyleSheet, Modal } from 'react-native'
+import DateTimePicker from '@react-native-community/datetimepicker'
+
+const DateSelecor = ({date, setDate, onPress}) => {
+    const st = StyleSheet.create({
+        outerView: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginVertical: 10,
+        },
+        innerView: {
+            paddingVertical: 10,
+            paddingHorizontal: 25,
+            width: "60%",
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        text: {
+            fontWeight: 'bold'
+        }
+    })
+    
+    const handleDaySwitch = (isNext) => {
+        let off = isNext ? 1 : -1
+        off *= 24 * 60 * 60 * 1000
+        const newDate = new Date(date.getTime() + off)
+        setDate(newDate)
+    }
+    
+    return <View style={[style.appFrame, st.outerView]}>
+        <View style={st.innerView}>
+            <Pressable onPress={()=>handleDaySwitch(false)}>
+                <Text style={style.h3}>&lt;</Text>
+            </Pressable>
+            <Pressable onPress={onPress}><Text style={[style.h4, st.text]}>{
+                date.toLocaleDateString()
+            }</Text></Pressable>
+            <Pressable onPress={()=>handleDaySwitch(true)}>
+                <Text style={style.h3}>&gt;</Text>
+            </Pressable>
+        </View>
+    </View>
+}
 
 const HabitButtons = ({habit, setHabit}) => {
   let jsx = []
@@ -63,8 +106,17 @@ const AddHabitButton = ({onPress}) => {
 }
 
 const MainView = ({habits, editHabit, addHabit, setHabit}) => {
-  return (
+  const [date, setDate] = useState(new Date())
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false)
+    return (
   <Fragment>
+    <Modal visible={isCalendarVisible} transparent={true}><DateTimePicker
+        mode="date"
+        display="calendar"
+        value={date}
+        onChange={(e, newDate) => {setDate(newDate); setIsCalendarVisible(false)}}
+    /></Modal>
+    <DateSelecor date={date} setDate={setDate} onPress={()=>setIsCalendarVisible(true)}/>
     <FlatList data={habits} style={style.appFrame}
     renderItem={({item: habit}) =>
       <HabitView key={habit.id} habit={habit}
