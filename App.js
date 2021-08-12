@@ -12,42 +12,39 @@ import {
 
 
 const COLORS = {
-  theme: "#1bd",
+  primary: "#1bd",
   dark: "#222",
   light: "#777",
 }
 
-var idCounter = 0;
+let habitIdCounter = 0;
 class Habit {
-  constructor(title, status="", description="") {
+  constructor(title, description="") {
     this.title = title
     this.description = description
-    this.status = status // done, '', missed
-    this.id = idCounter;
-    idCounter++;
+    // this.status = status // done, '', missed
+    this.isDone = false
+    this.isMissed = false
+    this.id = habitIdCounter;
+    habitIdCounter++;
   }
 
   copy() {
-    // Can this be cleaned? (i know it can)
-    const copy = new Habit()
-    copy.title = this.title
-    copy.description = this.description
-    copy.status = this.status
-    copy.id = this.id
-    return copy
+    return Object.assign(new Habit(), this)
   }
 }
 
 const style = StyleSheet.create({
-  frame1: {
-    borderColor: 'blue',
-    margin: 15,
-  },
   h1: {
     fontSize: 24,
     textAlign: 'center'
   },
+  h2:{
+    fontSize: 22,
+    textAlign: 'left'
+  },
   h3: {
+    textAlign: 'right',
     fontSize: 20
   },
   h4: {
@@ -58,56 +55,62 @@ const style = StyleSheet.create({
   p: {
     fontSize: 14,
   },
+  right: {
+    textAlign: "right"
+  },
+  
+  appFrame: {
+    margin: 15,
+  },
   habitView: {
     borderTopWidth: 1,
     borderBottomWidth: 1,
+    borderColor: COLORS.light,
     marginVertical: 5,
     padding: 10,
-    borderColor: '#444',
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  habbitButtons: {
+  habitButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: 78
   },
-  btn: {
+  habitButton: {
     width: 35,
     height: 35
   },
-  right: {
-    textAlign: "right"
-  },
 })
 
-const HabbitButtons = ({habit, setHabit}) => {
+const HabitButtons = ({habit, setHabit}) => {
   let jsx = []
-  for (let type of [["V", "done"], ["X", "missed"]]) {
-    let color = "#575757";
-    if (habit.status.includes(type[1])) color = "#1bd"
+  for (let type of [["V", "isDone"], ["X", "isMissed"]]) {
+    const color = habit[type[1]]
+      ? COLORS.primary
+      : COLORS.light;
+    
     const handlePress = () => {
       const newHabit = habit.copy()
-      newHabit.status = habit.status.includes(type[1])
-        ? ""
-        : type[1]
+      newHabit.isDone = newHabit.isMissed =  false
+      newHabit[type[1]] = !habit[type[1]]
       setHabit(newHabit)
     }
+
     jsx.push(
-      <View style={style.btn} key={type[0]}>
+      <View style={style.habitButton} key={type[0]}>
         <Button title={type[0]} color={color} onPress={handlePress}/>
       </View>
     )
   }
 
-  return <View style={style.habbitButtons}>{jsx}</View>
+  return <View style={style.habitButtons}>{jsx}</View>
 }
 
 const HabitView = (props) => {
   const [habit, setHabit] = useState(props.habit)
   return <View style={style.habitView}>
-    <HabbitButtons habit={habit} setHabit={setHabit}/>
+    <HabitButtons habit={habit} setHabit={setHabit}/>
     <Pressable onPress={() => props.edit(habit.id)}>
       <Text style={[style.h3, style.right]}>{habit.title}</Text>
       <Text style={[style.p, style.right]}>{habit.description}</Text>
@@ -116,35 +119,34 @@ const HabitView = (props) => {
 }
 
 const AddHabitButton = ({onPress}) => {
-  const style = {
-    position: "absolute",
-    bottom: 30,
-    right: 30,
-    width: 50,
-    height: 50,
-    backgroundColor: "#1bd",
-    borderRadius: 50,
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center"
-  }
-  const textStyle = {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "300",
-    borderColor:"#000",
-    bottom: 2
-  }
-  return <Pressable style={style} onPress={onPress}>
-    <Text style={textStyle}>+</Text>
+  const st = StyleSheet.create({
+    press: {
+      position: "absolute",
+      bottom: 30,
+      right: 30,
+      width: 50,
+      height: 50,
+      backgroundColor: "#1bd",
+      borderRadius: 50,
+      justifyContent: "center",
+      flexDirection: "row",
+      alignItems: "center"
+    },
+    text: {
+      color: "#fff",
+      bottom: 2
+    }
+  })
+
+  return <Pressable style={st.press} onPress={onPress}>
+    <Text style={[style.h2, st.text]}>+</Text>
   </Pressable>
 }
 
 const MainView = ({habits, editHabit, addHabit}) => {
   return (
   <Fragment>
-    <FlatList data={habits} style={style.frame1}
+    <FlatList data={habits} style={style.appFrame}
     renderItem={({item: habit}) =>
       <HabitView key={habit.id} habit={habit} edit={editHabit}/>}/>
     <AddHabitButton onPress={addHabit}/>
@@ -158,26 +160,36 @@ const EditField = ({
   placeholder,
   defaultValue
 }) => {
-  return <View style={{
-    flexDirection: "row",
-    alignItems: "center",
-    // paddingHorizontal: 5,
-    borderBottomWidth: 1,
-    borderColor: COLORS.dark,
-    // paddingVertical: 0,
-    marginVertical: 10,
-    width: "100%"}}>
-    <Text style={{
+  const st = StyleSheet.create({
+    frame: {
+      flexDirection: "row",
+      alignItems: "center",
+      // paddingHorizontal: 5,
+      borderBottomWidth: 1,
+      borderColor: COLORS.dark,
+      // paddingVertical: 0,
+      marginVertical: 10,
+      width: "100%"
+    },
+    text: {
       marginRight: 10,
-      fontSize: 17}}>{label}:</Text>
-    <View style={{flex: 1}}>
-      <TextInput 
-        style={{fontSize: 16, width: '100%'}}
-        onChangeText={(newText) => setText(newText)} 
-        placeholder="Type here..."
-        defaultValue={defaultValue}
-        />
-    </View>
+      fontSize: 15,
+      fontWeight: 'bold',
+    },
+    input: {
+      flex: 1,
+      fontSize: 16,
+      width: '100%'
+    }
+  })
+  return <View style={st.frame}>
+    <Text style={st.text}>{label}:</Text>
+    <TextInput 
+      style={st.input}
+      onChangeText={(newText) => setText(newText)} 
+      placeholder="Type here..."
+      defaultValue={defaultValue}
+    />
   </View>
 }
 
@@ -196,17 +208,19 @@ const EditSaveButtons = ({cancel, save}) => {
       borderRadius: 10,
       backgroundColor: COLORS.light
     },
-    highlight: {
-      backgroundColor: COLORS.theme
+    primary: {
+      backgroundColor: COLORS.primary
     }
   })
 
-  return <View><View style={st.innerView}>
+  return <View style={st.innerView}>
     <Pressable style={st.btn} onPress={cancel}>
-      <Text style={[style.h4]}>Cancel</Text></Pressable>
-    <Pressable style={[st.btn, st.highlight]} onPress={save}>
-      <Text style={style.h4}>Save</Text></Pressable>
-  </View></View>
+      <Text style={[style.h4]}>Cancel</Text>
+    </Pressable>
+    <Pressable style={[st.btn, st.primary]} onPress={save}>
+      <Text style={style.h4}>Save</Text>
+    </Pressable>
+  </View>
 }
 
 const EditView = ({habit, setHabit, closeView}) => {
@@ -221,7 +235,7 @@ const EditView = ({habit, setHabit, closeView}) => {
     closeView()
   }
 
-  return <View style={style.frame1}>
+  return <View style={style.appFrame}>
     <EditField setText={setTitle} label={'Title'}
       defaultValue={title}/>
     <EditField setText={setDesc} label={'Description'}
@@ -232,7 +246,7 @@ const EditView = ({habit, setHabit, closeView}) => {
 
 const App = () => {
   const [habits, setHabits] = useState([
-    new Habit("my habit","done", "A description")])
+    new Habit("my habit", "A description")])
   const [toEditId, setToEditId] = useState(null)
   
   const setHabit = (newHabit) => {
@@ -242,7 +256,7 @@ const App = () => {
   }
   const addHabit = () => {
     const newHabits = [...habits]
-    newHabits.push(new Habit("New habit", "", "Some description"))
+    newHabits.push(new Habit("New habit", "Your description"))
     setHabits(newHabits)
   }
 
