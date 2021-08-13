@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
+import { Modal } from 'react-native'
 import { data } from './src/utils'
 import MainView from './src/mainView'
 import EditView from './src/editView'
 import StatView from './src/statView'
 
 const App = () => {
-  return <StatView/>
-
   const [date, setDate] = useState(new Date())
   const [habits, setHabits] = useState(null)
   const [toEditId, setToEditId] = useState(null)
+  const [showStats, setShowStats] = useState(false)
   const dateStamp = date.toDateString()
   
   const getHabits = async () => {
@@ -31,18 +31,20 @@ const App = () => {
     getHabits()
   }
 
+  if (showStats) return <StatView closeView={()=>setShowStats(false)}/>
   if (toEditId == null) return <MainView 
-      habits={habits}
-      addHabit={addHabit}
-      editHabitStatus={editHabitStatus}
-      enterEditView={(habitId) => setToEditId(habitId)}
-      date={date}
-      setDate={date => {
-        const dateStamp = date.toDateString()
-        setDate(date)
-        setHabits(data.getHabits(dateStamp))
-      }}
-    />
+        habits={habits}
+        addHabit={addHabit}
+        editHabitStatus={editHabitStatus}
+        enterStatView={() => setShowStats(true)}
+        enterEditView={(habitId) => setToEditId(habitId)}
+        date={date}
+        setDate={date => {
+          const dateStamp = date.toDateString()
+          setDate(date)
+          setHabits(data.getHabits(dateStamp))
+        }}
+      />
 
   const editHabit = habits.find(h => h.id === toEditId)
   console.assert(!editHabit, "There is no habit with id", toEditId)

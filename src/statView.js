@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { View, Text, Pressable, StyleSheet, FlatList } from 'react-native'
+import { View, Text, Pressable, StyleSheet, FlatList, TextInput } from 'react-native'
 import { style, colors } from './style'
 import { data } from './utils'
 import { CenteredMessage, DateSelector } from './components'
+import { BackgroundColor } from 'chalk'
 
 const DAY = 1000*60*60*24
 
@@ -30,7 +31,6 @@ const WeekSelector = ({date, setDate}) => {
 const Column = ({header, data, renderer}) => {
     const st = StyleSheet.create({
         view: {
-            margin: 5,
             padding: 5,
             borderColor: colors.dark,
             justifyContent: 'flex-start',
@@ -40,11 +40,8 @@ const Column = ({header, data, renderer}) => {
         text: {
             fontSize: 17,
             fontWeight: 'bold',
-            marginBottom: 10,
+            marginBottom: 15,
         },
-        icon: {
-            marginVertical: 5,
-        }
     })
 
     return <View style={st.view}>
@@ -54,14 +51,23 @@ const Column = ({header, data, renderer}) => {
 }
 
 const DayStat = ({habits, date}) => {
+    const st = StyleSheet.create({
+        view: {
+            marginVertical: 4,
+            paddingVertical: 4,
+            paddingHorizontal: 2,
+            marginHorizontal: 1,
+            borderRadius: 4,
+        }
+    })
     const renderer = ({item: habit}) => {
-        let name = habit.isDone
-            ? 'checkmark'
-            : habit.isMissed 
-                ? 'close'
-                : 'remove'
+        let name = 'remove', bgc = colors.verylight
+        if (habit.isDone) {name = 'checkmark', bgc = colors.good}
+        else if (habit.isMissed) {name = 'close', bgc = colors.bad}
         name += '-outline'
-        return <Icon style={{marginVertical: 5}} key={habit.id} name={name} color={colors.dark} size={22} />
+        return <View style={[st.view, {backgroundColor: bgc}]}>
+            <Icon name={name} color={colors.dark} size={22} />
+        </View>
     }
     return <Column header={date.getDate()}
         data={habits} renderer={renderer}/>
@@ -71,17 +77,40 @@ const LabelColumn = ({habits}) => {
     const st = StyleSheet.create({
         text: {
             fontSize: 17,
-            marginVertical: 5,
+            marginVertical: 8,
         }
     })
     const renderer = ({item: habit}) => {
-        return <Text style={st.text}>{habit.title}</Text>
+        let title = habit.title
+        if (title.length > 8)
+            title = title.slice(0, 9)
+        return <Text style={st.text}>{title}</Text>
     }
     return <Column header={"Habit"}
         data={habits} renderer={renderer}/>   
 }
 
-const StatView = () => {
+const BackButton = ({onPress}) => {
+    const st = StyleSheet.create({
+        btn: {
+            marginVertical: 15,
+            paddingHorizontal: 40,
+            paddingVertical: 12,
+            borderRadius: 10,
+            backgroundColor: colors.light
+        },
+        text: {
+            textAlign: "center",
+            color: '#fff',
+        }
+    })
+    return <Pressable
+        onPress={onPress}
+        style={st.btn}>
+        <Text style={[style.h4,st.text]}>Go back</Text></Pressable>
+}
+
+const StatView = ({closeView}) => {
     const [date, setDate] = useState(new Date())
     const [habits, setHabits] = useState(null)
 
@@ -103,6 +132,8 @@ const StatView = () => {
     const st = StyleSheet.create({
         view: {
             flex: 1,
+            alignSelf: "center",
+            justifyContent: "center",
         },
         innerView: {
             flexDirection: 'row',
@@ -131,6 +162,7 @@ const StatView = () => {
                 renderItem={renderItem}
             />
         </View>
+        <BackButton onPress={closeView}/>
     </View>
 }
 

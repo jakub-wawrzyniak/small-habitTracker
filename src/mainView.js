@@ -120,12 +120,12 @@ const HabitList = ({habits, editHabitStatus, enterEditView}) => {
     </View>
 }
 
-const AddHabitButton = ({onPress}) => {
+const ActionButton = ({onPress, iconName}) => {
     const st = StyleSheet.create({
       press: {
-        position: "absolute",
-        bottom: 30,
-        right: 30,
+        // position: "absolute",
+        // bottom: 30,
+        // right: 30,
         width: 50,
         height: 50,
         backgroundColor: colors.primary,
@@ -134,21 +134,36 @@ const AddHabitButton = ({onPress}) => {
         flexDirection: "row",
         alignItems: "center"
       },
-      text: {
-        color: "#fff",
-        bottom: 2
-      }
     })
   
     return <Pressable style={st.press} onPress={onPress}>
-      <Icon name="add-outline" color={"#fff"} size={24}/>
+      <Icon name={iconName} color={"#fff"} size={24}/>
     </Pressable>
+}
+
+const ActionButtons = ({addHabit, showStats}) => {
+  const st = StyleSheet.create({
+    view: {
+      position: 'absolute',
+      bottom: 30,
+      right: 30,
+      height: 110,
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }
+  })
+
+  return <View style={st.view}>
+    <ActionButton onPress={addHabit} iconName='add-outline'/>
+    <ActionButton onPress={showStats} iconName='stats-chart'/>
+  </View>
 }
 
 const MainView = ({
     habits,
     addHabit,
     enterEditView,
+    enterStatView,
     editHabitStatus,
     date,
     setDate,
@@ -156,7 +171,11 @@ const MainView = ({
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
     return (
   <Fragment>
-    <Modal visible={isCalendarVisible} transparent={true}><DateTimePicker
+    <Modal
+      visible={isCalendarVisible}
+      transparent={true}
+      onRequestClose={() => {setIsCalendarVisible(false)}}>
+    <DateTimePicker
         mode="date"
         display="calendar"
         value={date}
@@ -170,7 +189,7 @@ const MainView = ({
         habits={habits}
         enterEditView={enterEditView}
         editHabitStatus={editHabitStatus}/>}
-    <AddHabitButton onPress={addHabit}/>
+    <ActionButtons addHabit={addHabit} showStats={enterStatView}/>
   </Fragment>
   )
 }

@@ -81,7 +81,13 @@ const EditField = ({
       closeView()
     }
   
-    return <View style={style.appFrame}>
+    const st = {
+      justifyContent: "center",
+      marginHorizontal: 25,
+      flex:1
+    }
+
+    return <View style={[style.appFrame, st]}>
       <EditField setText={setTitle} label={'Title'}
         defaultValue={title}/>
       <EditField setText={setDesc} label={'Description'}
