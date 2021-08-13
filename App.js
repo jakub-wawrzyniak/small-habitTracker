@@ -1,41 +1,45 @@
 import React, { useState } from 'react'
-import { Habit } from './src/utils'
+import { Habit, data } from './src/utils'
 import EditView from './src/editView'
 import MainView from './src/mainView'
 
 const App = () => {
-  // return <DateTimePicker
-  //   mode="date"
-  //   display="calendar"
-  //   value={new Date()}
-  // />
-
-  const [habits, setHabits] = useState([])
+  const [date, setDate] = useState(new Date())
+  const dateStamp = date.toDateString()
+  const [habits, setHabits] = useState(data.getHabits(dateStamp))
   const [toEditId, setToEditId] = useState(null)
   
-  const setHabit = (newHabit) => {
-    const newHabits = habits.filter(h => h.id != newHabit.id)
-    newHabits.push(newHabit)
-    newHabits.sort((h1, h2) => h1.id - h2.id)
-    setHabits(newHabits)
+  const editHabitInfo = (newHabit) => {
+    data.editHabitInfo(newHabit)
+    setHabits(data.getHabits(dateStamp))
+  }
+  const editHabitStatus = (newHabit) => {
+    data.editHabitStatus(newHabit, dateStamp)
+    setHabits(data.getHabits(dateStamp))
   }
   const addHabit = () => {
-    const newHabits = [...habits]
-    newHabits.push(new Habit("New habit", "Your description"))
-    setHabits(newHabits)
+    data.addHabit()
+    setHabits(data.getHabits(dateStamp))
   }
 
   if (toEditId == null) return <MainView 
-      habits={habits} addHabit={addHabit}
+      habits={habits}
+      addHabit={addHabit}
+      setHabit={editHabitStatus}
       editHabit={(habitId) => setToEditId(habitId)}
-      setHabit={setHabit}
+      date={date}
+      setDate={date => {
+        const dateStamp = date.toDateString()
+        setDate(date)
+        setHabits(data.getHabits(dateStamp))
+      }}
     />
 
   const editHabit = habits.find(h => h.id === toEditId)
-  console.assert(!editHabit, "There is no habit with id", toEditId, 'was found!')
+  console.assert(!editHabit, "There is no habit with id", toEditId)
   return <EditView
     habit={editHabit}
-    setHabit={setHabit}
+    setHabit={editHabitInfo}
     closeView={() => setToEditId(null)}
   />
 };

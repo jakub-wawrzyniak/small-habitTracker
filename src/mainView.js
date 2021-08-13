@@ -105,8 +105,14 @@ const AddHabitButton = ({onPress}) => {
   </Pressable>
 }
 
-const MainView = ({habits, editHabit, addHabit, setHabit}) => {
-  const [date, setDate] = useState(new Date())
+const MainView = ({
+    habits,
+    editHabit,
+    addHabit,
+    setHabit,
+    date,
+    setDate,
+}) => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
     return (
   <Fragment>

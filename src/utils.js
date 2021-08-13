@@ -22,8 +22,8 @@ class Data {
   #loadedDates = {}
 
   constructor() {
-    this.#loadHabits()
-    this.#loadDate(new Date())
+    this.loadHabits()
+    this.loadDate(new Date())
     // this.#habits = [
     //   {id, title, description},
     //   {id, title, description},
@@ -39,17 +39,17 @@ class Data {
     // dateStamp = date.toDateString()
   }
 
-  #loadHabits() {}
-  #saveHabits() {}
+  loadHabits() {}
+  saveHabits() {}
 
-  #loadDate(dateStamp) {
+  loadDate(dateStamp) {
     this.#loadedDates[dateStamp] = {}
   }
-  #saveDate(dateStamp) {}
+  saveDate(dateStamp) {}
 
   getHabits(dateStamp) {
     if (!(dateStamp in this.#loadedDates))
-      this.#loadDate(dateStamp)
+      this.loadDate(dateStamp)
     const data = this.#loadedDates[dateStamp]
 
     const habits = this.#habits.map(h => {
@@ -71,7 +71,7 @@ class Data {
       description: habit.description,
     }
     this.#habits.push(core)
-    this.#saveHabits()
+    this.saveHabits()
   }
 
   editHabitInfo(newHabit) {
@@ -80,7 +80,7 @@ class Data {
     habits.push(core)
     habits.sort((h1, h2) => h1.id - h2.id)
     this.#habits = habits
-    this.#saveHabits()
+    this.saveHabits()
   }
 
   editHabitStatus(newHabit, dateStamp) {
@@ -89,8 +89,8 @@ class Data {
     if (isDone || isMissed) 
       this.#loadedDates[dateStamp][id] = [isDone, isMissed]
     else
-      delete this.#loadedDates[dateStamp]
-    this.#saveDate(dateStamp)
+      delete this.#loadedDates[dateStamp][id]
+    this.saveDate(dateStamp)
   }
 }
 
