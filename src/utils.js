@@ -51,9 +51,9 @@ class Data {
     this.#areHabitsLoaded = true
   }
   
-  async saveHabits() {
+  saveHabits() {
     const json = JSON.stringify(this.#habits)
-    await AsyncStorage.setItem('habits', json)
+    AsyncStorage.setItem('habits', json)
   }
   
   async loadDate(dateStamp) {
@@ -62,9 +62,9 @@ class Data {
     else this.#loadedDates[dateStamp] = JSON.parse(json)
   }
   
-  async saveDate(dateStamp) {
+  saveDate(dateStamp) {
     const json = JSON.stringify(this.#loadedDates[dateStamp])
-    await AsyncStorage.setItem('dateStamp', json)
+    AsyncStorage.setItem(dateStamp, json)
   }
 
   async getHabits(dateStamp) {
