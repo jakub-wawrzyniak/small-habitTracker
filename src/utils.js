@@ -1,14 +1,15 @@
-let habitIdCounter = 0;
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 class Habit {
+  static habitIdCounter = 0;
   constructor(isNew=false) {
     this.title = "New Habit"
     this.description = "Your description"
-    // this.date = null
     this.isDone = false
     this.isMissed = false
     if (isNew) {
-      this.id = habitIdCounter;
-      habitIdCounter++;
+      this.id = Habit.habitIdCounter;
+      Habit.habitIdCounter++;
     }
   }
 
@@ -20,36 +21,51 @@ class Habit {
 class Data {
   #habits = []
   #loadedDates = {}
+  #areHabitsLoaded = false
 
-  constructor() {
-    this.loadHabits()
-    this.loadDate(new Date())
-    // this.#habits = [
-    //   {id, title, description},
-    //   {id, title, description},
-    //   {id, title, description},
-    // ]
-    // this.#loadedDates = {
-    //   date: {
-    //     id: [isDone, isMissed],
-    //     id: [isDone, isMissed],
-    //     id: [isDone, isMissed],
-    //   },
-    // }
-    // dateStamp = date.toDateString()
+  // this.#habits = [
+  //   {id, title, description},
+  //   {id, title, description},
+  //   {id, title, description},
+  // ]
+  // this.#loadedDates = {
+  //   date: {
+  //     id: [isDone, isMissed],
+  //     id: [isDone, isMissed],
+  //     id: [isDone, isMissed],
+  //   },
+  // }
+  // dateStamp = date.toDateString()
+
+  async loadHabits() {
+    if (this.#areHabitsLoaded) return
+    const json = await AsyncStorage.getItem('habits')
+    if (json === null) this.#habits = []
+    else this.#habits = JSON.parse(json)
+    this.#areHabitsLoaded = true
+  }
+  
+  async saveHabits() {
+    const json = JSON.stringify(this.#habits)
+    await AsyncStorage.setItem('habits', json)
+    // console.log("Save successful:", json)
+  }
+  
+  async loadDate(dateStamp) {
+    const json = await AsyncStorage.getItem(dateStamp)
+    if (json === null) this.#loadedDates[dateStamp] = {}
+    else this.#loadedDates[dateStamp] = JSON.parse(json)
+  }
+  
+  async saveDate(dateStamp) {
+    const json = JSON.stringify(this.#loadedDates[dateStamp])
+    await AsyncStorage.setItem('dateStamp', json)
   }
 
-  loadHabits() {}
-  saveHabits() {}
-
-  loadDate(dateStamp) {
-    this.#loadedDates[dateStamp] = {}
-  }
-  saveDate(dateStamp) {}
-
-  getHabits(dateStamp) {
+  async getHabits(dateStamp) {
+    await this.loadHabits()
     if (!(dateStamp in this.#loadedDates))
-      this.loadDate(dateStamp)
+      await this.loadDate(dateStamp)
     const data = this.#loadedDates[dateStamp]
 
     const habits = this.#habits.map(h => {
@@ -94,31 +110,8 @@ class Data {
   }
 }
 
+AsyncStorage.clear()
 
-const test = () => {
-  const data = new Data()
-  const dateStamp = new Date().toDateString()
-  let habits = data.getHabits(dateStamp)
-  console.log(habits)
-
-  data.addHabit()
-  habits = data.getHabits(dateStamp)
-  console.log(habits)
-
-  let habit = habits[0]
-  habit.title = "a completely new title"
-  data.editHabitInfo(habit)
-  habits = data.getHabits(dateStamp)
-  console.log(habits)
-
-  habit = habits[0]
-  habit.isDone = true
-  data.editHabitStatus(habit, dateStamp)
-  habits = data.getHabits(dateStamp)
-  console.log(habits)
-}
-
-// test()
 const data = new Data()
 export {
   Habit,

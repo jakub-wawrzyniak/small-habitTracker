@@ -105,6 +105,34 @@ const AddHabitButton = ({onPress}) => {
   </Pressable>
 }
 
+const CenteredMessage = ({children}) => {
+    const st = StyleSheet.create({
+        view: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        text: {
+            textAlign: "center",
+            fontWeight: 'bold',
+            fontSize: 16
+        }
+    })
+    return <View style={st.view}>
+        <Text style={st.text}>{children}</Text>
+    </View>
+}
+
+const HabitList = ({habits, setHabit, editHabit}) => {
+    if (habits.length == 0)
+        return <CenteredMessage>No habit has been created</CenteredMessage>
+    return <FlatList data={habits} style={style.appFrame}
+    renderItem={
+        ({item: habit}) =>
+        <HabitView id={habit.id} habit={habit}
+        editHabit={editHabit} setHabit={setHabit}/>}/>
+}
+
 const MainView = ({
     habits,
     editHabit,
@@ -123,10 +151,13 @@ const MainView = ({
         onChange={(e, newDate) => {setDate(newDate); setIsCalendarVisible(false)}}
     /></Modal>
     <DateSelecor date={date} setDate={setDate} onPress={()=>setIsCalendarVisible(true)}/>
-    <FlatList data={habits} style={style.appFrame}
-    renderItem={({item: habit}) =>
-      <HabitView key={habit.id} habit={habit}
-        editHabit={editHabit} setHabit={setHabit}/>}/>
+    {habits === null &&
+        <CenteredMessage>Loading...</CenteredMessage>}
+    {habits !== null &&
+        <HabitList
+        habits={habits}
+        editHabit={editHabit}
+        setHabit={setHabit}/>}
     <AddHabitButton onPress={addHabit}/>
   </Fragment>
   )

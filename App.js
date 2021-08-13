@@ -1,25 +1,34 @@
-import React, { useState } from 'react'
-import { Habit, data } from './src/utils'
+import React, { useState, useEffect } from 'react'
+import { data } from './src/utils'
 import EditView from './src/editView'
 import MainView from './src/mainView'
 
 const App = () => {
   const [date, setDate] = useState(new Date())
-  const dateStamp = date.toDateString()
-  const [habits, setHabits] = useState(data.getHabits(dateStamp))
+  const [habits, setHabits] = useState(null)
   const [toEditId, setToEditId] = useState(null)
+  const dateStamp = date.toDateString()
   
+  const getHabits = async () => {
+    const newHabits = await data.getHabits(dateStamp)
+    setHabits(newHabits)
+  }
+  useEffect(getHabits, [date])
+  useEffect(() => {
+    if (habits === null) getHabits()
+  })
+
   const editHabitInfo = (newHabit) => {
     data.editHabitInfo(newHabit)
-    setHabits(data.getHabits(dateStamp))
+    getHabits()
   }
   const editHabitStatus = (newHabit) => {
     data.editHabitStatus(newHabit, dateStamp)
-    setHabits(data.getHabits(dateStamp))
+    getHabits()
   }
   const addHabit = () => {
     data.addHabit()
-    setHabits(data.getHabits(dateStamp))
+    getHabits()
   }
 
   if (toEditId == null) return <MainView 
