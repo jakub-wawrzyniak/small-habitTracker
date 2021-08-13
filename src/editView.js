@@ -61,10 +61,10 @@ const EditField = ({
   
     return <View style={st.innerView}>
       <Pressable style={st.btn} onPress={cancel}>
-        <Text style={[style.h4]}>Cancel</Text>
+        <Text style={[style.h4, {color: "#fff"}]}>Cancel</Text>
       </Pressable>
       <Pressable style={[st.btn, st.primary]} onPress={save}>
-        <Text style={style.h4}>Save</Text>
+        <Text style={[style.h4, {color: "#fff"}]}>Save</Text>
       </Pressable>
     </View>
   }

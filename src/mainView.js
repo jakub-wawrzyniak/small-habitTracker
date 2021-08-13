@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
+import Icon from 'react-native-vector-icons/Ionicons'
 import { style, colors } from './style';
-import { View, Button, Pressable, FlatList,
+import { View, Pressable, FlatList,
     Text, StyleSheet, Modal } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
@@ -32,13 +33,19 @@ const DateSelecor = ({date, setDate, onPress}) => {
         innerView: {
             paddingVertical: 10,
             paddingHorizontal: 25,
-            width: "60%",
+            width: "90%",
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
         },
         text: {
-            fontWeight: 'bold'
+            fontSize: 17,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        el: {
+          paddingHorizontal: 15,
+          paddingVertical: 2,
         }
     })
     
@@ -51,14 +58,14 @@ const DateSelecor = ({date, setDate, onPress}) => {
     
     return <View style={[style.appFrame, st.outerView]}>
         <View style={st.innerView}>
-            <Pressable onPress={()=>handleDaySwitch(false)}>
-                <Text style={style.h3}>&lt;</Text>
+            <Pressable onPress={()=>handleDaySwitch(false)} style={st.el}>
+                <Icon name={"chevron-back-outline"} size={22}/>
             </Pressable>
-            <Pressable onPress={onPress}><Text style={[style.h4, st.text]}>{
+            <Pressable onPress={onPress} style={st.el}><Text style={st.text}>{
                 date.toUTCString().slice(0, 11)
             }</Text></Pressable>
-            <Pressable onPress={()=>handleDaySwitch(true)}>
-                <Text style={style.h3}>&gt;</Text>
+            <Pressable onPress={()=>handleDaySwitch(true)} style={st.el}>
+                <Icon name={"chevron-forward-outline"} size={22}/>
             </Pressable>
         </View>
     </View>
@@ -69,16 +76,20 @@ const HabitStatusButtons = ({habit, editHabitStatus}) => {
     habitButtons: {
       flexDirection: "row",
       justifyContent: "space-between",
-      width: 78
+      left: -10,
     },
     habitButton: {
-      width: 35,
-      height: 35
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 40,
+      height: 40,
+      borderRadius: 7,
+      marginHorizontal: 5,
     },
   })
   
   let jsx = []
-  for (let type of [["V", "isDone"], ["X", "isMissed"]]) {
+  for (let type of [["checkmark", "isDone"], ["close", "isMissed"]]) {
     const color = habit[type[1]]
       ? colors.primary
       : colors.light;
@@ -90,10 +101,12 @@ const HabitStatusButtons = ({habit, editHabitStatus}) => {
       editHabitStatus(newHabit)
     }
 
+    const name = `${type[0]}-outline`
     jsx.push(
-      <View style={style.habitButton} key={type[0]}>
-        <Button title={type[0]} color={color} onPress={handlePress}/>
-      </View>
+      <Pressable onPress={handlePress} key={type[0]}
+      style={[style.habitButton, {backgroundColor: color}]}>
+        <Icon name={name} color={"#fff"} size={24}/>
+      </Pressable>
     )
   }
 
@@ -103,8 +116,8 @@ const HabitStatusButtons = ({habit, editHabitStatus}) => {
 const HabitElement = ({habit, enterEditView, editHabitStatus}) => {
   const st = StyleSheet.create({
     habitElement: {
-      borderTopWidth: 1,
-      borderBottomWidth: 1,
+      // borderTopWidth: 1,
+      // borderBottomWidth: 1,
       borderColor: colors.light,
       marginVertical: 5,
       padding: 10,
@@ -123,14 +136,37 @@ const HabitElement = ({habit, enterEditView, editHabitStatus}) => {
   </View>
 }
 
+const SeparatingLine = () => {
+  return <View style={{
+    flex: 1,
+    height: 1,
+    marginVertical: 2,
+    borderBottomWidth: 1,
+    borderColor: colors.dark,
+  }}></View>
+}
+
 const HabitList = ({habits, editHabitStatus, enterEditView}) => {
     if (habits.length == 0)
         return <CenteredMessage>No habit has been created</CenteredMessage>
-    return <FlatList data={habits} style={style.appFrame}
-    renderItem={
-        ({item: habit}) =>
+
+    const st = StyleSheet.create({
+      view: {
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: colors.dark,
+      }
+    })
+    const renderer = ({item: habit}) => <Fragment>
+        {habit.id !== habits[0].id && <SeparatingLine/>}
         <HabitElement id={habit.id} habit={habit}
-        enterEditView={enterEditView} editHabitStatus={editHabitStatus}/>}/>
+        enterEditView={enterEditView}
+        editHabitStatus={editHabitStatus}/>
+    </Fragment>
+    return <View style={[style.appFrame, st.view]}>
+      <FlatList
+        data={habits} renderItem={renderer}/>
+    </View>
 }
 
 const AddHabitButton = ({onPress}) => {
@@ -141,7 +177,7 @@ const AddHabitButton = ({onPress}) => {
         right: 30,
         width: 50,
         height: 50,
-        backgroundColor: "#1bd",
+        backgroundColor: colors.primary,
         borderRadius: 50,
         justifyContent: "center",
         flexDirection: "row",
@@ -154,7 +190,7 @@ const AddHabitButton = ({onPress}) => {
     })
   
     return <Pressable style={st.press} onPress={onPress}>
-      <Text style={[style.h2, st.text]}>+</Text>
+      <Icon name="add-outline" color={"#fff"} size={24}/>
     </Pressable>
 }
 

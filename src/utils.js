@@ -21,7 +21,6 @@ class Habit {
   copy() {
     return Object.assign(new Habit(this.id), this)
   }
-
 }
 
 class Data {
