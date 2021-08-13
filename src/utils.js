@@ -36,9 +36,8 @@ class Data {
   // ]
   // this.#loadedDates = {
   //   date: {
-  //     id: [isDone, isMissed],
-  //     id: [isDone, isMissed],
-  //     id: [isDone, isMissed],
+  //     id: isDone,
+  //     id: isDone,
   //   },
   // }
   // dateStamp = date.toDateString()
@@ -76,8 +75,8 @@ class Data {
     const habits = this.#habits.map(h => {
       const habit = Object.assign(new Habit(h.id), h)
       if (habit.id in data) {
-        const [isDone, isMissed] = data[habit.id]
-        habit.isDone = isDone, habit.isMissed = isMissed
+        const isDone = data[habit.id]
+        habit.isDone = isDone, habit.isMissed = !isDone
       }
       return habit
     })
@@ -108,7 +107,7 @@ class Data {
     const {id, isDone, isMissed} = newHabit
     console.assert(!(isDone && isMissed), "Habit cannot be done and missed at the same time")
     if (isDone || isMissed) 
-      this.#loadedDates[dateStamp][id] = [isDone, isMissed]
+      this.#loadedDates[dateStamp][id] = isDone
     else
       delete this.#loadedDates[dateStamp][id]
     this.saveDate(dateStamp)
