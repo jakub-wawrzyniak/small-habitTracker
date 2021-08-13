@@ -4,72 +4,23 @@ import { style, colors } from './style';
 import { View, Pressable, FlatList,
     Text, StyleSheet, Modal } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { CenteredMessage, DateSelector } from './components'
 
-const CenteredMessage = ({children}) => {
-    const st = StyleSheet.create({
-        view: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        text: {
-            textAlign: "center",
-            fontWeight: 'bold',
-            fontSize: 16
-        }
-    })
-    return <View style={st.view}>
-        <Text style={st.text}>{children}</Text>
-    </View>
+const DaySelector = ({date, setDate, onPress}) => {
+  const handleDaySwitch = (isNext) => {
+    let off = isNext ? 1 : -1
+    off *= 24 * 60 * 60 * 1000
+    const newDate = new Date(date.getTime() + off)
+    setDate(newDate)
+  }
+  return <DateSelector
+    onPrev={() => handleDaySwitch(false)}
+    onNext={() => handleDaySwitch(true)}
+    onPress={onPress}>
+    {date.toUTCString().slice(0, 11)}
+  </DateSelector>
 }
 
-const DateSelecor = ({date, setDate, onPress}) => {
-    const st = StyleSheet.create({
-        outerView: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginVertical: 10,
-        },
-        innerView: {
-            paddingVertical: 10,
-            paddingHorizontal: 25,
-            width: "90%",
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-        },
-        text: {
-            fontSize: 17,
-            fontWeight: 'bold',
-            textAlign: 'center',
-        },
-        el: {
-          paddingHorizontal: 15,
-          paddingVertical: 2,
-        }
-    })
-    
-    const handleDaySwitch = (isNext) => {
-        let off = isNext ? 1 : -1
-        off *= 24 * 60 * 60 * 1000
-        const newDate = new Date(date.getTime() + off)
-        setDate(newDate)
-    }
-    
-    return <View style={[style.appFrame, st.outerView]}>
-        <View style={st.innerView}>
-            <Pressable onPress={()=>handleDaySwitch(false)} style={st.el}>
-                <Icon name={"chevron-back-outline"} size={22}/>
-            </Pressable>
-            <Pressable onPress={onPress} style={st.el}><Text style={st.text}>{
-                date.toUTCString().slice(0, 11)
-            }</Text></Pressable>
-            <Pressable onPress={()=>handleDaySwitch(true)} style={st.el}>
-                <Icon name={"chevron-forward-outline"} size={22}/>
-            </Pressable>
-        </View>
-    </View>
-}
 
 const HabitStatusButtons = ({habit, editHabitStatus}) => {
   const style = StyleSheet.create({
@@ -211,7 +162,7 @@ const MainView = ({
         value={date}
         onChange={(e, newDate) => {setDate(newDate); setIsCalendarVisible(false)}}
     /></Modal>
-    <DateSelecor date={date} setDate={setDate} onPress={()=>setIsCalendarVisible(true)}/>
+    <DaySelector date={date} setDate={setDate} onPress={()=>setIsCalendarVisible(true)}/>
     {habits === null &&
         <CenteredMessage>Loading...</CenteredMessage>}
     {habits !== null &&

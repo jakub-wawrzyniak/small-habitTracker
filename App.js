@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { data } from './src/utils'
-import EditView from './src/editView'
 import MainView from './src/mainView'
+import EditView from './src/editView'
+import StatView from './src/statView'
 
 const App = () => {
+  return <StatView/>
+
   const [date, setDate] = useState(new Date())
   const [habits, setHabits] = useState(null)
   const [toEditId, setToEditId] = useState(null)
