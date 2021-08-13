@@ -14,9 +14,6 @@ const App = () => {
     setHabits(newHabits)
   }
   useEffect(getHabits, [date])
-  useEffect(() => {
-    if (habits === null) getHabits()
-  })
 
   const editHabitInfo = (newHabit) => {
     data.editHabitInfo(newHabit)
@@ -34,8 +31,8 @@ const App = () => {
   if (toEditId == null) return <MainView 
       habits={habits}
       addHabit={addHabit}
-      setHabit={editHabitStatus}
-      editHabit={(habitId) => setToEditId(habitId)}
+      editHabitStatus={editHabitStatus}
+      enterEditView={(habitId) => setToEditId(habitId)}
       date={date}
       setDate={date => {
         const dateStamp = date.toDateString()
@@ -48,7 +45,7 @@ const App = () => {
   console.assert(!editHabit, "There is no habit with id", toEditId)
   return <EditView
     habit={editHabit}
-    setHabit={editHabitInfo}
+    editHabitInfo={editHabitInfo}
     closeView={() => setToEditId(null)}
   />
 };

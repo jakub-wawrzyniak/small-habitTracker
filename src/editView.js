@@ -69,7 +69,7 @@ const EditField = ({
     </View>
   }
   
-  const EditView = ({habit, setHabit, closeView}) => {
+  const EditView = ({habit, editHabitInfo, closeView}) => {
     const [title, setTitle] = useState(habit.title)
     const [desc, setDesc] = useState(habit.description)
   
@@ -77,7 +77,7 @@ const EditField = ({
       const newHabit = habit.copy()
       newHabit.title = title
       newHabit.description = desc
-      setHabit(newHabit)
+      editHabitInfo(newHabit)
       closeView()
     }
   
