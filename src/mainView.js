@@ -37,7 +37,7 @@ const DateSelecor = ({date, setDate, onPress}) => {
                 <Text style={style.h3}>&lt;</Text>
             </Pressable>
             <Pressable onPress={onPress}><Text style={[style.h4, st.text]}>{
-                date.toLocaleDateString()
+                date.toUTCString().slice(0, 11)
             }</Text></Pressable>
             <Pressable onPress={()=>handleDaySwitch(true)}>
                 <Text style={style.h3}>&gt;</Text>
