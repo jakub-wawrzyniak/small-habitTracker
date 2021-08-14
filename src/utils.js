@@ -113,7 +113,7 @@ class Data {
   }
 }
 
-// AsyncStorage.clear()
+AsyncStorage.clear()
 
 const data = new Data()
 export {

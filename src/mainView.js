@@ -114,17 +114,12 @@ const HabitList = ({habits, editHabitStatus, enterEditView}) => {
         enterEditView={enterEditView}
         editHabitStatus={editHabitStatus}/>
     </Fragment>
-    return <View style={[style.appFrame, st.view]}>
-      <FlatList data={habits} renderItem={renderer}/>
-    </View>
+    return <FlatList style={[style.appFrame, st.view]} data={habits} renderItem={renderer}/>
 }
 
 const ActionButton = ({onPress, iconName}) => {
     const st = StyleSheet.create({
       press: {
-        // position: "absolute",
-        // bottom: 30,
-        // right: 30,
         width: 50,
         height: 50,
         backgroundColor: colors.primary,
