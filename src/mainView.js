@@ -103,18 +103,22 @@ const HabitList = ({habits, editHabitStatus, enterEditView}) => {
 
     const st = StyleSheet.create({
       view: {
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
         borderColor: colors.dark,
+        borderTopWidth: 1,
       }
     })
-    const renderer = ({item: habit}) => <Fragment>
-        {habit.id !== habits[0].id && <SeparatingLine/>}
+    const renderer = ({item: habit, index}) => <Fragment>
         <HabitElement id={habit.id} habit={habit}
         enterEditView={enterEditView}
         editHabitStatus={editHabitStatus}/>
+        {index === habits.length-1 && <SeparatingLine/>}
     </Fragment>
-    return <FlatList style={[style.appFrame, st.view]} data={habits} renderItem={renderer}/>
+    return <FlatList
+      style={[style.appFrame, st.view]} 
+      data={habits} 
+      renderItem={renderer}
+      ItemSeparatorComponent={SeparatingLine}
+      />
 }
 
 const ActionButton = ({onPress, iconName}) => {
