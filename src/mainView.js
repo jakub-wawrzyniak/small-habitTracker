@@ -115,8 +115,7 @@ const HabitList = ({habits, editHabitStatus, enterEditView}) => {
         editHabitStatus={editHabitStatus}/>
     </Fragment>
     return <View style={[style.appFrame, st.view]}>
-      <FlatList
-        data={habits} renderItem={renderer}/>
+      <FlatList data={habits} renderItem={renderer}/>
     </View>
 }
 

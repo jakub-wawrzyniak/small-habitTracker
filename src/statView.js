@@ -4,7 +4,6 @@ import { View, Text, Pressable, StyleSheet, FlatList, TextInput } from 'react-na
 import { style, colors } from './style'
 import { data } from './utils'
 import { CenteredMessage, DateSelector } from './components'
-import { BackgroundColor } from 'chalk'
 
 const DAY = 1000*60*60*24
 
@@ -83,7 +82,7 @@ const LabelColumn = ({habits}) => {
     const renderer = ({item: habit}) => {
         let title = habit.title
         if (title.length > 8)
-            title = title.slice(0, 9)
+            title = title.slice(0, 13)
         return <Text style={st.text}>{title}</Text>
     }
     return <Column header={"Habit"}
@@ -158,8 +157,10 @@ const StatView = ({closeView}) => {
         <WeekSelector date={date} setDate={setDate}/>
         <View style={st.innerView}>
             <LabelColumn habits={habits[0]}/>
-            <FlatList horizontal={true} data={habits}
+            <FlatList horizontal={true}
+                data={habits}
                 renderItem={renderItem}
+                keyExtractor={(h, id) => id}
             />
         </View>
         <BackButton onPress={closeView}/>
