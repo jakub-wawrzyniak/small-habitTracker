@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
-import { View, Text, Pressable, StyleSheet, FlatList, TextInput } from 'react-native'
+import { View, Text, Pressable, StyleSheet, FlatList, Modal } from 'react-native'
 import { style, colors } from './style'
 import { data } from './utils'
 import { CenteredMessage, DateSelector } from './components'
+import DateTimePicker from '@react-native-community/datetimepicker'
+
 
 const DAY = 1000*60*60*24
 
-const WeekSelector = ({date, setDate}) => {
+const WeekSelector = ({date, setDate, onPress}) => {
     const in6Days = new Date()
     in6Days.setTime(date.getTime()+DAY*6)
 
@@ -21,7 +23,7 @@ const WeekSelector = ({date, setDate}) => {
     return <DateSelector
         onNext={() => handleWeekChange(true)}
         onPrev={() => handleWeekChange(false)}
-        onPress={()=>{}}>
+        onPress={onPress}>
         {date.getDate()}-{in6Days.getDate()}
         {` ${date.toUTCString().slice(8, 16)}`}
     </DateSelector>
@@ -112,6 +114,7 @@ const BackButton = ({onPress}) => {
 const StatView = ({closeView}) => {
     const [date, setDate] = useState(new Date())
     const [habits, setHabits] = useState(null)
+    const [isCalendarVisible, setIsCalendarVisible] = useState(false)
 
     const getHabits = async () => {
         const promises = []
@@ -154,7 +157,17 @@ const StatView = ({closeView}) => {
     }
 
     return <View style={st.view}>
-        <WeekSelector date={date} setDate={setDate}/>
+        <Modal
+        visible={isCalendarVisible}
+        transparent={true}
+        onRequestClose={() => {setIsCalendarVisible(false)}}>
+        <DateTimePicker
+            mode="date"
+            display="calendar"
+            value={date}
+            onChange={(e, newDate) => {setDate(newDate); setIsCalendarVisible(false)}}
+        /></Modal>
+        <WeekSelector date={date} setDate={setDate} onPress={()=>setIsCalendarVisible(true)}/>
         <View style={st.innerView}>
             <LabelColumn habits={habits[0]}/>
             <FlatList horizontal={true}
